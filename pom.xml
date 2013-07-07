@@ -20,8 +20,8 @@
 
   <licenses>
     <license>
-      <name>The Apache Software License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <name>GNU General Public License, version 2, with the Classpath Exception</name>
+      <url>http://openjdk.java.net/legal/gplv2+ce.html</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
@@ -31,14 +31,6 @@
     <developerConnection>scm:git:git@github.com:headius/unsafe-mock</developerConnection>
     <url>https://github.com/headius/unsafe-mock</url>
   </scm>
-
-  <developers>
-    <developer>
-      <id>headius</id>
-      <name>Charles Nutter</name>
-      <email>headius@headius.com</email>
-    </developer>
-  </developers>
 
   <build>
     <plugins>
