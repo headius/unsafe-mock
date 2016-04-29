@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2000, 2012, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2000, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -28,6 +28,9 @@ package sun.misc;
 import java.security.*;
 import java.lang.reflect.*;
 
+import sun.reflect.CallerSensitive;
+import sun.reflect.Reflection;
+
 
 /**
  * A collection of methods for performing low-level, unsafe operations.
@@ -43,6 +46,7 @@ public final class Unsafe {
     private static native void registerNatives();
     static {
         registerNatives();
+        sun.reflect.Reflection.registerMethodsToFilter(Unsafe.class, "getUnsafe");
     }
 
     private Unsafe() {}
@@ -79,8 +83,11 @@ public final class Unsafe {
      *             <code>checkPropertiesAccess</code> method doesn't allow
      *             access to the system properties.
      */
+    @CallerSensitive
     public static Unsafe getUnsafe() {
-        Class<?> cc = sun.reflect.Reflection.getCallerClass(2);
+        Class<?> caller = Reflection.getCallerClass();
+        if (!VM.isSystemDomainLoader(caller.getClassLoader()))
+            throw new SecurityException("Unsafe");
         return theUnsafe;
     }
 
@@ -814,8 +821,6 @@ public final class Unsafe {
                                        ClassLoader loader,
                                        ProtectionDomain protectionDomain);
 
-    public native Class<?> defineClass(String name, byte[] b, int off, int len);
-
     /**
      * Define a class but do not make it known to the class loader or system dictionary.
      * <p>
@@ -836,17 +841,19 @@ public final class Unsafe {
 
 
     /** Allocate an instance but do not run any constructor.
-        Initializes the class if it has not yet been. */
+     Initializes the class if it has not yet been. */
     public native Object allocateInstance(Class<?> cls)
-        throws InstantiationException;
+            throws InstantiationException;
 
     /** Lock the object.  It must get unlocked via {@link #monitorExit}. */
+    @Deprecated
     public native void monitorEnter(Object o);
 
     /**
      * Unlock the object.  It must have been locked via {@link
      * #monitorEnter}.
      */
+    @Deprecated
     public native void monitorExit(Object o);
 
     /**
@@ -854,6 +861,7 @@ public final class Unsafe {
      * whether the lock succeeded.  If it did, the object must be
      * unlocked via {@link #monitorExit}.
      */
+    @Deprecated
     public native boolean tryMonitorEnter(Object o);
 
     /** Throw the exception without telling the verifier. */
@@ -1125,5 +1133,13 @@ public final class Unsafe {
      * @since 1.8
      */
     public native void fullFence();
+
+    /**
+     * Throws IllegalAccessError; for use by the VM.
+     * @since 1.8
+     */
+    private static void throwIllegalAccessError() {
+        throw new IllegalAccessError();
+    }
 
 }
