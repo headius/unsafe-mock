@@ -3,7 +3,7 @@
   <groupId>com.headius</groupId>
   <artifactId>unsafe-mock</artifactId>
   <packaging>jar</packaging>
-  <version>8.92.1-SNAPSHOT</version>
+  <version>8.92.1</version>
   <name>unsafe-mock</name>
   <url>https://github.com/headius/unsafe-mock</url>
 
